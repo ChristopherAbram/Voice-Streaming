@@ -57,7 +57,6 @@ public class CallActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override

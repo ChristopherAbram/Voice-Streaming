@@ -9,6 +9,9 @@ public class Constants {
     static public final String CALLER_ID = "caller_id";
     static public final String RECIPIENT_ID = "recipient_id";
 
+    static public final String USER_ID = "user_id";
+    static public final String PASSWORD = "password";
+
     // Sinch applications keys:
     public class Sinch {
         public static final String APP_KEY = "1831c053-3e37-4989-b40c-0649b52a2598";

@@ -40,7 +40,9 @@
         <service
             android:name=".SinchService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".UserListActivity"></activity>
     </application>
 
 </manifest>

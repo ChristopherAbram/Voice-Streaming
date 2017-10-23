@@ -1,17 +1,21 @@
 package fi.jamk.mobile.sinchexample;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity {
+import static fi.jamk.mobile.sinchexample.R.id.user;
+
+public class LoginActivity extends Activity{
 
     private TextView mUser = null;
-    private TextView mRecipient = null;
-
+    private TextView mPassword = null;
+    private ProgressBar mProgressBar = null;
     private Button mLogin = null;
 
     @Override
@@ -20,34 +24,69 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Setting view instances:
-        mUser = (TextView) findViewById(R.id.callerId);
-        mRecipient = (TextView) findViewById(R.id.recipientId);
+        mUser = (TextView) findViewById(user);
+        mPassword = (TextView) findViewById(R.id.password);
         mLogin = (Button) findViewById(R.id.loginButton);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        hideProgressBar();
 
         // Bind actions:
         setLoginClickListener();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideProgressBar();
+    }
+
     private void setLoginClickListener(){
         if(mLogin != null){
+
             mLogin.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    String callerId = mUser.getText().toString();
-                    String recipientId = mRecipient.getText().toString();
+                    mLogin.setEnabled(false);
+                    showProgressBar();
+                    String username = mUser.getText().toString();
+                    String password = mPassword.getText().toString();
 
-                    // Start calling activity:
-                    sendIntent(callerId, recipientId);
+                    if(username.isEmpty() || password.isEmpty()) {
+                        hideProgressBar();
+                        // Some validations:
+                        Toast.makeText(getBaseContext(), "Username or Password is empty.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        User user = new User(username, password);
+                        UserManager mUserManager = new UserManager();
+                        if(mUserManager.authorize(user)) {
+                            // Start list activity:
+                            sendIntent(user);
+                            hideProgressBar();
+                        }
+                        else {
+                            hideProgressBar();
+                            Toast.makeText(getBaseContext(), "Such user does not exist.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    mLogin.setEnabled(true);
                 }
             });
         }
     }
 
-    private void sendIntent(String caller, String recipient){
-        Intent intent = new Intent(getApplicationContext(), CallActivity.class);
-        intent.putExtra(Constants.CALLER_ID, caller);
-        intent.putExtra(Constants.RECIPIENT_ID, recipient);
+    private void sendIntent(User user){
+        Intent intent = new Intent(getApplicationContext(), UserListActivity.class);
+        intent.putExtra(Constants.USER_ID, user.name);
+        intent.putExtra(Constants.PASSWORD, user.password);
         startActivity(intent);
     }
 
+    private void showProgressBar(){
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar(){
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
 }
