@@ -11,6 +11,7 @@ public class Constants {
 
     static public final String USER_ID = "user_id";
     static public final String PASSWORD = "password";
+    static public final String PHONE = "phone";
 
     // Sinch applications keys:
     public class Sinch {

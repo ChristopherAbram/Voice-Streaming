@@ -42,7 +42,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".IncomingCallScreenActivity"></activity>
+        <activity android:name=".IncomingCallScreenActivity" />
+        <activity android:name=".UserDetailedActivity"></activity>
     </application>
 
 </manifest>

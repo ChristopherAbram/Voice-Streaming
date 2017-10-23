@@ -3,12 +3,19 @@ package fi.jamk.mobile.sinchexample;
 public class User {
 
     public String name;
+    public String phone;
     public String password;
 
     public User(){}
 
     public User(String name, String password){
         this.name = name;
+        this.password = password;
+    }
+
+    public User(String name, String phone, String password){
+        this.name = name;
+        this.phone = phone;
         this.password = password;
     }
 
@@ -23,4 +30,10 @@ public class User {
 
         return false;
     }
+
+    @Override
+    public String toString(){
+        return name;
+    }
+
 }

@@ -12,13 +12,13 @@ public class UserManager {
     }
 
     protected void init(){
-        mUserList.add(new User("Christopher", "password"));
-        mUserList.add(new User("Kob", "password"));
-        mUserList.add(new User("Lucas", "password"));
-        mUserList.add(new User("Lisa", "password"));
-        mUserList.add(new User("Maxim", "password"));
-        mUserList.add(new User("Lee", "password"));
-        mUserList.add(new User("John", "password"));
+        mUserList.add(new User("Christopher", "111-111-111", "password"));
+        mUserList.add(new User("Kob", "222-222-222", "password"));
+        mUserList.add(new User("Lucas", "333-333-333", "password"));
+        mUserList.add(new User("Lisa", "444-444-444", "password"));
+        mUserList.add(new User("Maxim", "555-555-555", "password"));
+        mUserList.add(new User("Lee", "666-666-666", "password"));
+        mUserList.add(new User("John", "777-777-777", "password"));
     }
 
     public boolean authorize(User user){
