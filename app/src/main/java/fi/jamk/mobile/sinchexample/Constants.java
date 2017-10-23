@@ -18,5 +18,6 @@ public class Constants {
         public static final String APP_SECRET = "9uLMIL8Rk0KWRhO+dHRglA==";
         public static final String ENVIRONMENT = "clientapi.sinch.com";
     }
+//
 
 }
