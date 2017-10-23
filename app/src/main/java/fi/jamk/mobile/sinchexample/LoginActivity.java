@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import static fi.jamk.mobile.sinchexample.R.id.user;
 
-public class LoginActivity extends Activity{
+public class LoginActivity extends Activity {
 
     private TextView mUser = null;
     private TextView mPassword = null;

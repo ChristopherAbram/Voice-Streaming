@@ -19,6 +19,8 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
         // Get authorized user:
         mAuthorizedUser = getAuthorizedUser();
 
+
+
         // TODO: Make user list, get user list from UserManager and...
 
     }
@@ -35,6 +37,9 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
     protected void onServiceConnected() {
         getSinchServiceInterface().setStartListener(this);
         Toast.makeText(this, "Calling service working!", Toast.LENGTH_SHORT).show();
+        if (!getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(mAuthorizedUser.name);
+        }
     }
 
     @Override
@@ -44,6 +49,11 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
 
     @Override
     public void onStarted() {
+        openCallActivity();
+    }
 
+    private void openCallActivity() {
+        Intent mainActivity = new Intent(this, CallActivity.class);
+        startActivity(mainActivity);
     }
 }

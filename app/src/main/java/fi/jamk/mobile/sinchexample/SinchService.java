@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.sinch.android.rtc.ClientRegistration;
-import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.SinchClientListener;
@@ -15,11 +14,6 @@ import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
-import com.sinch.android.rtc.calling.CallListener;
-
-import java.util.List;
-
-import static android.content.ContentValues.TAG;
 
 public class SinchService extends Service {
 
@@ -28,6 +22,8 @@ public class SinchService extends Service {
     private Call mCall = null;
 
     private String mUserId = null;
+    public static final String CALL_ID = "CALL_ID";
+    static final String TAG = SinchService.class.getSimpleName();
 
     public SinchService() {}
 
@@ -174,32 +170,13 @@ public class SinchService extends Service {
         }
     }
 
-    private class SinchCallListener implements CallListener {
-        @Override
-        public void onCallEnded(Call endedCall) {
-            mCall = null;
-
-        }
-        @Override
-        public void onCallEstablished(Call establishedCall) {
-
-        }
-        @Override
-        public void onCallProgressing(Call progressingCall) {
-
-        }
-        @Override
-        public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-            //don't worry about this right now
-        }
-    }
-
     private class SinchCallClientListener implements CallClientListener {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
-            mCall = incomingCall;
-            mCall.answer();
-            mCall.addCallListener(new SinchCallListener());
+            Intent intent = new Intent(SinchService.this, IncomingCallScreenActivity.class);
+            intent.putExtra(CALL_ID, incomingCall.getCallId());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            SinchService.this.startActivity(intent);
         }
     }
 }

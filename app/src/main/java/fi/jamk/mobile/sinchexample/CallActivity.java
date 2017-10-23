@@ -1,142 +1,156 @@
 package fi.jamk.mobile.sinchexample;
 
-import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sinch.android.rtc.PushPair;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.calling.Call;
-import com.sinch.android.rtc.calling.CallClient;
-import com.sinch.android.rtc.calling.CallClientListener;
+import com.sinch.android.rtc.calling.CallEndCause;
 import com.sinch.android.rtc.calling.CallListener;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class CallActivity extends AppCompatActivity {
+public class CallActivity extends BaseActivity {
 
-    private SinchClient mSinchClient = null;
+    static final String TAG = CallActivity.class.getSimpleName();
 
-    private Call mCall;
-    private Button mButton = null;
-    private TextView mCallState = null;
+    private AudioPlayer mAudioPlayer;
+    private Timer mTimer;
+    private UpdateCallDurationTask mDurationTask;
 
-    private String mCallerId = null;
-    private String mRecipientId = null;
+    private String mCallId;
+
+    private TextView mCallDuration;
+    private TextView mCallState;
+    private TextView mCallerName;
+
+    private class UpdateCallDurationTask extends TimerTask {
+
+        @Override
+        public void run() {
+            CallActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateCallDuration();
+                }
+            });
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_call);
+        setContentView(R.layout.callscreen);
 
-        // Get credentials:
-        getIntentExtras();
-
-
-
-
+        mAudioPlayer = new AudioPlayer(this);
+        mCallDuration = (TextView) findViewById(R.id.callDuration);
+        mCallerName = (TextView) findViewById(R.id.remoteUser);
         mCallState = (TextView) findViewById(R.id.callState);
+        Button endCallButton = (Button) findViewById(R.id.hangupButton);
 
-        mButton = (Button) findViewById(R.id.button);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        endCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (mCall == null) {
-                    mCall = mSinchClient.getCallClient().callUser(mRecipientId);
-                    mCall.addCallListener(new SinchCallListener());
-                    mButton.setText("Hang Up");
-                } else {
-                    mCall.hangup();
-                    mCall = null;
-                    mButton.setText("Call");
-                }
+            public void onClick(View v) {
+                endCall();
             }
         });
+        mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
     }
 
     @Override
-    protected void onStart(){
-        super.onStart();
-        // Build and start sinch client:
-        buildSinchClient();
-        startClient();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        terminateClient();
-    }
-
-    private void getIntentExtras(){
-        Intent intent = getIntent();
-        mCallerId = intent.getStringExtra(Constants.CALLER_ID);
-        mRecipientId = intent.getStringExtra(Constants.RECIPIENT_ID);
-    }
-
-    private void buildSinchClient(){
-        mSinchClient = Sinch.getSinchClientBuilder()
-                .context(this)
-                .userId(mCallerId)
-                .applicationKey(Constants.Sinch.APP_KEY)
-                .applicationSecret(Constants.Sinch.APP_SECRET)
-                .environmentHost(Constants.Sinch.ENVIRONMENT)
-                .build();
-    }
-
-    private void terminateClient(){
-        if (isStarted()) {
-            mSinchClient.terminate();
-            mSinchClient = null;
+    public void onServiceConnected() {
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.addCallListener(new SinchCallListener());
+            mCallerName.setText(call.getRemoteUserId());
+            mCallState.setText(call.getState().toString());
+        } else {
+            Log.e(TAG, "Started with invalid callId, aborting.");
+            finish();
         }
     }
 
-    private boolean isStarted() {
-        return (mSinchClient != null && mSinchClient.isStarted());
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDurationTask.cancel();
+        mTimer.cancel();
     }
 
-    private void startClient(){
-        mSinchClient.setSupportCalling(true);
-        mSinchClient.startListeningOnActiveConnection();
-        mSinchClient.start();
-        mSinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTimer = new Timer();
+        mDurationTask = new UpdateCallDurationTask();
+        mTimer.schedule(mDurationTask, 0, 500);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // User should exit activity by ending call, not by going back.
+    }
+
+    private void endCall() {
+        mAudioPlayer.stopProgressTone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }
+        finish();
+    }
+
+    private String formatTimespan(int totalSeconds) {
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        return String.format(Locale.US, "%02d:%02d", minutes, seconds);
+    }
+
+    private void updateCallDuration() {
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            mCallDuration.setText(formatTimespan(call.getDetails().getDuration()));
+        }
     }
 
     private class SinchCallListener implements CallListener {
+
         @Override
-        public void onCallEnded(Call endedCall) {
-            mCall = null;
-            mButton.setText("Call");
+        public void onCallEnded(Call call) {
+            CallEndCause cause = call.getDetails().getEndCause();
+            Log.d(TAG, "Call ended. Reason: " + cause.toString());
+            mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            mCallState.setText("");
+            String endMsg = "Call ended: " + call.getDetails().toString();
+            Toast.makeText(CallActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            endCall();
         }
+
         @Override
-        public void onCallEstablished(Call establishedCall) {
+        public void onCallEstablished(Call call) {
+            Log.d(TAG, "Call established");
+            mAudioPlayer.stopProgressTone();
+            mCallState.setText(call.getState().toString());
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-            mCallState.setText("Connected");
         }
+
         @Override
-        public void onCallProgressing(Call progressingCall) {
-            mCallState.setText("Ringing");
+        public void onCallProgressing(Call call) {
+            Log.d(TAG, "Call progressing");
+            mAudioPlayer.playProgressTone();
         }
+
         @Override
         public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-            //don't worry about this right now
+            // Send a push through your push provider here, e.g. GCM
         }
-    }
 
-    private class SinchCallClientListener implements CallClientListener {
-        @Override
-        public void onIncomingCall(CallClient callClient, Call incomingCall) {
-            mCall = incomingCall;
-            mCall.answer();
-            mCall.addCallListener(new SinchCallListener());
-            mButton.setText("Hang up");
-        }
     }
 }

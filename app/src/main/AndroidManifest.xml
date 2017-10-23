@@ -35,14 +35,14 @@
         <activity
             android:name=".CallActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".UserListActivity" />
 
         <service
             android:name=".SinchService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".UserListActivity"></activity>
+        <activity android:name=".IncomingCallScreenActivity"></activity>
     </application>
 
 </manifest>
