@@ -74,7 +74,7 @@ public class CallActivity extends BaseActivity {
             UserManager um = new UserManager();
             User user = um.findUserByPhone(call.getRemoteUserId());
 
-            if(user != null) mCallerName.setText(user.name);
+            if(user != null) mCallerName.setText(user.showName);
             else mCallerName.setText(call.getRemoteUserId());
 
             mCallState.setText(call.getState().toString());

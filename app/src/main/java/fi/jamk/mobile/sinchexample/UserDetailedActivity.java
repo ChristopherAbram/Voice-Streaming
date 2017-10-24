@@ -19,6 +19,7 @@ public class UserDetailedActivity extends BaseActivity implements SinchService.S
     private User mPickedUser = null;
     private TextView mUserName = null;
     private TextView mPhoneNumber = null;
+    private TextView mShowName =  null;
     private Button mCallButton = null;
 
     @Override
@@ -30,6 +31,7 @@ public class UserDetailedActivity extends BaseActivity implements SinchService.S
         mPickedUser = getPickedUser();
 
         // Set up view elements:
+        mShowName = (TextView) findViewById(R.id.showname);
         mUserName = (TextView) findViewById(R.id.username);
         mPhoneNumber = (TextView) findViewById(R.id.phone);
         mCallButton = (Button) findViewById(R.id.call);
@@ -104,13 +106,14 @@ public class UserDetailedActivity extends BaseActivity implements SinchService.S
     private User getPickedUser(){
         User user = new User();
         Intent intent = getIntent();
+        user.showName = intent.getStringExtra(Constants.SHOW_NAME);
         user.name = intent.getStringExtra(Constants.USER_ID);
-        user.password = intent.getStringExtra(Constants.PASSWORD);
         user.phone = intent.getStringExtra(Constants.PHONE);
         return user;
     }
 
     private void setView(){
+        mShowName.setText(mPickedUser.showName);
         mUserName.setText(mPickedUser.name);
         mPhoneNumber.setText(mPickedUser.phone);
     }
@@ -122,7 +125,6 @@ public class UserDetailedActivity extends BaseActivity implements SinchService.S
                 case R.id.call:
                     callButtonClicked();
                     break;
-
             }
         }
     };

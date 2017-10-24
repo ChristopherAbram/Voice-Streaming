@@ -37,7 +37,7 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
         }
 
         //Put list on Adapter
-        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.contactlist, R.id.textView, displayUserList);
+        ContactListAdapter adapter = new ContactListAdapter(this, displayUserList);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,6 +52,7 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
     private User getAuthorizedUser(){
         User user = new User();
         Intent intent = getIntent();
+        user.showName = intent.getStringExtra(Constants.SHOW_NAME);
         user.name = intent.getStringExtra(Constants.USER_ID);
         user.password = intent.getStringExtra(Constants.PASSWORD);
         for(User u : mUserManager.getUserList()){
@@ -65,6 +66,7 @@ public class UserListActivity extends BaseActivity implements SinchService.Start
 
     private void showUserDetailed(User user){
         Intent intent = new Intent(this, UserDetailedActivity.class);
+        intent.putExtra(Constants.SHOW_NAME, user.showName);
         intent.putExtra(Constants.USER_ID, user.name);
         intent.putExtra(Constants.PHONE, user.phone);
         intent.putExtra(Constants.PASSWORD, user.password);

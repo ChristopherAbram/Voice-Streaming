@@ -47,7 +47,7 @@ public class IncomingCallScreenActivity extends BaseActivity {
             TextView remoteUser = (TextView) findViewById(R.id.remoteUser);
             UserManager um = new UserManager();
             User user = um.findUserByPhone(call.getRemoteUserId());
-            if(user != null) remoteUser.setText(user.name);
+            if(user != null) remoteUser.setText(user.showName);
             else remoteUser.setText(call.getRemoteUserId());
         } else {
             Log.e(TAG, "Started with invalid callId, aborting");

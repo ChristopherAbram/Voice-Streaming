@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SinchExample.iml" filepath="$PROJECT_DIR$/SinchExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Voice-Streaming.iml" filepath="$PROJECT_DIR$/Voice-Streaming.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sinch-android-rtc-3.11.1/sinch-android-rtc-3.11.1.iml" filepath="$PROJECT_DIR$/sinch-android-rtc-3.11.1/sinch-android-rtc-3.11.1.iml" />
       <module fileurl="file://$PROJECT_DIR$/sinch-android-rtc-3.11.1/sinch-android-rtc-3.11.1.iml" filepath="$PROJECT_DIR$/sinch-android-rtc-3.11.1/sinch-android-rtc-3.11.1.iml" />
     </modules>
   </component>

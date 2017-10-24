@@ -9,6 +9,7 @@ public class Constants {
     static public final String CALLER_ID = "caller_id";
     static public final String RECIPIENT_ID = "recipient_id";
 
+    static public final String SHOW_NAME = "show_name";
     static public final String USER_ID = "user_id";
     static public final String PASSWORD = "password";
     static public final String PHONE = "phone";

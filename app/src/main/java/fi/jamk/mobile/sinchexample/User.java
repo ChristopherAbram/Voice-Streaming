@@ -2,6 +2,7 @@ package fi.jamk.mobile.sinchexample;
 
 public class User {
 
+    public String showName;
     public String name;
     public String phone;
     public String password;
@@ -13,7 +14,8 @@ public class User {
         this.password = password;
     }
 
-    public User(String name, String phone, String password){
+    public User(String showName, String name, String phone, String password){
+        this.showName = showName;
         this.name = name;
         this.phone = phone;
         this.password = password;
