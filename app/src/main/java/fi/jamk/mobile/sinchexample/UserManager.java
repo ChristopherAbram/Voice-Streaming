@@ -25,6 +25,13 @@ public class UserManager {
         return mUserList.contains(user);
     }
 
+    public User findUserByPhone(String phone){
+        for(User u : mUserList)
+            if(u.phone.equals(phone))
+                return u;
+        return null;
+    }
+
     public UserList getUserList(){
         return mUserList;
     }

@@ -70,7 +70,13 @@ public class CallActivity extends BaseActivity {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.addCallListener(new SinchCallListener());
-            mCallerName.setText(call.getRemoteUserId());
+
+            UserManager um = new UserManager();
+            User user = um.findUserByPhone(call.getRemoteUserId());
+
+            if(user != null) mCallerName.setText(user.name);
+            else mCallerName.setText(call.getRemoteUserId());
+
             mCallState.setText(call.getState().toString());
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
